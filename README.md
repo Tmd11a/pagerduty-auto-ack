@@ -10,7 +10,7 @@ This script monitors the incidents that are assigned to you and acks them if nee
 At the end of execution (when stopped with C^c) it displays the incidents that it acknowledged.
 
 ```
-usage: pagerduty-auto-ack [-h] [--pagerduty-api-key PAGERDUTY_API_KEY] [--interval INTERVAL] [--urgency {high,low}] [--once | --duration SECONDS]
+usage: pagerduty-auto-ack [-h] [--pagerduty-api-key PAGERDUTY_API_KEY] [--interval INTERVAL] [--urgency {high,low}] [--once | --duration MINUTES]
 
 Monitor and automatically ACKnowledge PagerDuty incidents
 
@@ -20,7 +20,7 @@ options:
   --interval INTERVAL   how often (in seconds) to run the check
   --urgency {high,low}  defaults to all urgencies
   --once                check once and exit
-  --duration SECONDS    run for a bounded time and exit
+  --duration MINUTES    run for a bounded time and exit
 ```
 
 ## Requirements
@@ -67,7 +67,7 @@ python -m pagerduty_auto_ack --once
 For a 20-minute acknowledgement window, run:
 
 ```
-python -m pagerduty_auto_ack --pagerduty-api-key <api_key> --duration 1200
+python -m pagerduty_auto_ack --pagerduty-api-key <api_key> --duration 20
 ```
 
 `--once` checks once and exits. It is intended for schedulers:
@@ -89,14 +89,14 @@ systemctl --user daemon-reload
 systemctl --user enable --now pagerduty-auto-ack.timer
 ```
 
-The units expect the checkout at `~/GitDepot/pagerduty-auto-ack`. Change `WorkingDirectory` in the service file if it lives elsewhere. Confirm scheduling with `systemctl --user list-timers pagerduty-auto-ack.timer`. To keep the user timer running after logout, enable lingering once with `loginctl enable-linger "$USER"`.
+The units expect the checkout at `~/pagerduty-auto-ack`. Change `WorkingDirectory` in the service file if it lives elsewhere. Confirm scheduling with `systemctl --user list-timers pagerduty-auto-ack.timer`. To keep the user timer running after logout, enable lingering once with `loginctl enable-linger "$USER"`.
 
 ## cron
 
 Create the same `~/.config/pagerduty-auto-ack.env` file above, then add this line with `crontab -e`:
 
 ```
-* * * * * set -a; . "$HOME/.config/pagerduty-auto-ack.env"; set +a; cd "$HOME/GitDepot/pagerduty-auto-ack" && /usr/bin/python -m pagerduty_auto_ack --once >> "$HOME/.local/state/pagerduty-auto-ack.log" 2>&1
+* * * * * set -a; . "$HOME/.config/pagerduty-auto-ack.env"; set +a; cd "$HOME/pagerduty-auto-ack" && /usr/bin/python -m pagerduty_auto_ack --once >> "$HOME/.local/state/pagerduty-auto-ack.log" 2>&1
 ```
 
 Create `~/.local/state` first if it does not exist.

@@ -18,6 +18,10 @@ def positive_int(value):
     return parsed
 
 
+def duration_seconds(minutes):
+    return minutes * 60
+
+
 def load_env_file(path):
     """Read simple KEY=VALUE entries from a dotenv-format file."""
     values = {}
@@ -82,8 +86,8 @@ def parse_args(argv=None):
     run_mode.add_argument(
         "--duration",
         type=positive_int,
-        metavar="SECONDS",
-        help="run checks for this many seconds, then exit",
+        metavar="MINUTES",
+        help="run checks for this many minutes, then exit",
     )
 
     args = parser.parse_args(argv)
@@ -132,7 +136,9 @@ def main():
             logger.info(f"Running as user: {user_email}")
 
             deadline = (
-                time.monotonic() + args.duration if args.duration is not None else None
+                time.monotonic() + duration_seconds(args.duration)
+                if args.duration is not None
+                else None
             )
             while True:
                 ack_incidents += acknowledge_current_incidents(

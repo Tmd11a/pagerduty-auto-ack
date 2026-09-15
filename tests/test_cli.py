@@ -33,10 +33,11 @@ class CommandLineTests(unittest.TestCase):
 
         self.assertEqual("u+from-environment", args.pagerduty_api_key)
 
-    def test_duration_is_parsed_as_seconds(self):
-        args = cli.parse_args(["--pagerduty-api-key", "u+example", "--duration", "1200"])
+    def test_duration_is_parsed_as_minutes(self):
+        args = cli.parse_args(["--pagerduty-api-key", "u+example", "--duration", "20"])
 
-        self.assertEqual(1200, args.duration)
+        self.assertEqual(20, args.duration)
+        self.assertEqual(1200, cli.duration_seconds(args.duration))
 
     def test_duration_must_be_positive(self):
         with self.assertRaises(SystemExit):

@@ -3,6 +3,6 @@ Description=Acknowledge currently assigned PagerDuty incidents
 
 [Service]
 Type=oneshot
-WorkingDirectory=%h/GitDepot/pagerduty-auto-ack
+WorkingDirectory=%h/pagerduty-auto-ack
 EnvironmentFile=%h/.config/pagerduty-auto-ack.env
 ExecStart=/usr/bin/python -m pagerduty_auto_ack --once
