@@ -35,7 +35,7 @@ This needs only Python 3.13; it has no runtime package dependencies. The API key
 ```
 git clone https://github.com/Tmd11a/pagerduty-auto-ack.git
 cd pagerduty-auto-ack
-python -m pagerduty_auto_ack --pagerduty-api-key <api_key>
+./pagerduty-auto-ack --pagerduty-api-key <api_key>
 ```
 
 No `pipx`, Poetry, virtual environment, or package installation is required.
@@ -52,14 +52,14 @@ chmod 600 .env
 Then run without placing the token on the command line:
 
 ```
-python -m pagerduty_auto_ack --once
+./pagerduty-auto-ack --once
 ```
 
 Use another dotenv file with `--env-file /path/to/file`. `.env` is ignored by Git. An exported environment variable works too:
 
 ```
 export PAGERDUTY_API_KEY='u+...'
-python -m pagerduty_auto_ack --once
+./pagerduty-auto-ack --once
 ```
 
 ## Run for a bounded time
@@ -67,19 +67,19 @@ python -m pagerduty_auto_ack --once
 For a 20-minute acknowledgement window, run:
 
 ```
-python -m pagerduty_auto_ack --pagerduty-api-key <api_key> --duration 20
+./pagerduty-auto-ack --pagerduty-api-key <api_key> --duration 20
 ```
 
 `--once` checks once and exits. It is intended for schedulers:
 
 ```
-PAGERDUTY_API_KEY=<api_key> python -m pagerduty_auto_ack --once
+PAGERDUTY_API_KEY=<api_key> ./pagerduty-auto-ack --once
 ```
 
 ## systemd user timer
 
 The included user timer starts at 07:00 in America/Denver every day. Its
-service runs python -m pagerduty_auto_ack --duration 720, covering the
+service runs `./pagerduty-auto-ack --duration 720`, covering the
 07:00–19:00 Mountain Time window. systemd will not start another copy of the
 same service while it is still active; RuntimeMaxSec=13h is an additional guard
 if the application does not exit normally.
@@ -118,4 +118,4 @@ To stop the current coverage window and disable future runs:
 --once remains useful for a deliberate one-time check, but the installed timer
 does not use it:
 
-    python -m pagerduty_auto_ack --once
+    ./pagerduty-auto-ack --once

@@ -6,6 +6,6 @@ ConditionPathExists=%h/.config/pagerduty-auto-ack.env
 Type=exec
 WorkingDirectory=/home/tyler/GitDepot/pagerduty-auto-ack
 EnvironmentFile=%h/.config/pagerduty-auto-ack.env
-ExecStart=/run/current-system/sw/bin/python3 -m pagerduty_auto_ack --duration 720
+ExecStart=/home/tyler/GitDepot/pagerduty-auto-ack/pagerduty-auto-ack --duration 720
 RuntimeMaxSec=13h
 TimeoutStopSec=30s
