@@ -78,25 +78,44 @@ PAGERDUTY_API_KEY=<api_key> python -m pagerduty_auto_ack --once
 
 ## systemd user timer
 
-The included units run one check every minute. Store the token outside the repository:
+The included user timer starts at 07:00 in America/Denver every day. Its
+service runs python -m pagerduty_auto_ack --duration 720, covering the
+07:00–19:00 Mountain Time window. systemd will not start another copy of the
+same service while it is still active; RuntimeMaxSec=13h is an additional guard
+if the application does not exit normally.
 
-```
-mkdir -p ~/.config ~/.config/systemd/user
-printf 'PAGERDUTY_API_KEY=<api_key>\n' > ~/.config/pagerduty-auto-ack.env
-chmod 600 ~/.config/pagerduty-auto-ack.env
-cp contrib/pagerduty-auto-ack.service contrib/pagerduty-auto-ack.timer ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now pagerduty-auto-ack.timer
-```
+The checkout is expected at /home/tyler/GitDepot/pagerduty-auto-ack. Store the
+token outside the repository in a protected environment file. Create the file
+without putting the token in shell history, then edit it locally:
 
-The units expect the checkout at `~/pagerduty-auto-ack`. Change `WorkingDirectory` in the service file if it lives elsewhere. Confirm scheduling with `systemctl --user list-timers pagerduty-auto-ack.timer`. To keep the user timer running after logout, enable lingering once with `loginctl enable-linger "$USER"`.
+    install -d -m 700 ~/.config ~/.config/systemd/user
+    install -m 600 /dev/null ~/.config/pagerduty-auto-ack.env
+    $EDITOR ~/.config/pagerduty-auto-ack.env
 
-## cron
+The file must contain exactly this assignment, with your token substituted
+locally:
 
-Create the same `~/.config/pagerduty-auto-ack.env` file above, then add this line with `crontab -e`:
+    PAGERDUTY_API_KEY=u+...
 
-```
-* * * * * set -a; . "$HOME/.config/pagerduty-auto-ack.env"; set +a; cd "$HOME/pagerduty-auto-ack" && /usr/bin/python -m pagerduty_auto_ack --once >> "$HOME/.local/state/pagerduty-auto-ack.log" 2>&1
-```
+Install or update the units and enable the schedule:
 
-Create `~/.local/state` first if it does not exist.
+    install -m 644 contrib/pagerduty-auto-ack.service contrib/pagerduty-auto-ack.timer ~/.config/systemd/user/
+    systemctl --user daemon-reload
+    loginctl enable-linger "$USER"
+    systemctl --user enable --now pagerduty-auto-ack.timer
+
+Check its state and next trigger with:
+
+    systemctl --user status pagerduty-auto-ack.timer
+    systemctl --user list-timers pagerduty-auto-ack.timer
+    journalctl --user -u pagerduty-auto-ack.service
+
+To stop the current coverage window and disable future runs:
+
+    systemctl --user disable --now pagerduty-auto-ack.timer
+    systemctl --user stop pagerduty-auto-ack.service
+
+--once remains useful for a deliberate one-time check, but the installed timer
+does not use it:
+
+    python -m pagerduty_auto_ack --once

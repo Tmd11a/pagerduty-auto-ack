@@ -1,10 +1,10 @@
 [Unit]
-Description=Run PagerDuty auto-ack every minute
+Description=Run PagerDuty auto-ack daily from 07:00 to 19:00 America/Denver
 
 [Timer]
-OnBootSec=1min
-OnUnitActiveSec=1min
-Persistent=true
+OnCalendar=*-*-* 07:00:00 America/Denver
+AccuracySec=1min
+Persistent=false
 Unit=pagerduty-auto-ack.service
 
 [Install]

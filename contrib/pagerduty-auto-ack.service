@@ -1,8 +1,11 @@
 [Unit]
-Description=Acknowledge currently assigned PagerDuty incidents
+Description=Automatically acknowledge assigned PagerDuty incidents during the daily coverage window
+ConditionPathExists=%h/.config/pagerduty-auto-ack.env
 
 [Service]
-Type=oneshot
-WorkingDirectory=%h/pagerduty-auto-ack
+Type=exec
+WorkingDirectory=/home/tyler/GitDepot/pagerduty-auto-ack
 EnvironmentFile=%h/.config/pagerduty-auto-ack.env
-ExecStart=/usr/bin/python -m pagerduty_auto_ack --once
+ExecStart=/run/current-system/sw/bin/python3 -m pagerduty_auto_ack --duration 720
+RuntimeMaxSec=13h
+TimeoutStopSec=30s
