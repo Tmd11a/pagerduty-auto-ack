@@ -3,9 +3,9 @@
 ## Runtime and commands
 
 - Support Python 3.13. The application has no runtime dependencies and runs directly from a checkout:
-  `python -m pagerduty_auto_ack --pagerduty-api-key <api_key>`.
+  `./pagerduty-auto-ack --once`.
 - Before handing off a change, run:
-  `python -m unittest discover -v` and `python -m pagerduty_auto_ack --help`.
+  `python -m unittest discover -v` and `./pagerduty-auto-ack --help`.
 - Do not add a dependency, virtual-environment requirement, pipx, or Poetry to the normal run path without an explicit reason.
 
 ## PagerDuty safety
